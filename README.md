@@ -1,4 +1,4 @@
-# Streets-of-Rogue-Save-Editor_UnlockTool
+# Rogue_Save_Editor_UnlockTool
 
 A save editor for the game **Streets of Rogue** to read and modify `GameUnlocks.dat` files.
 

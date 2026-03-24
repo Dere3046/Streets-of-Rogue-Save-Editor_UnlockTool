@@ -1,4 +1,4 @@
-# Streets-of-Rogue-Save-Editor_UnlockTool - 地痞街区 GameUnlocks.dat 修改工具
+# Rogue_Save_Editor_UnlockTool
 
 为游戏《地痞街区》(Streets of Rogue) 制作的存档修改工具，用于读取和修改 `GameUnlocks.dat` 文件。
 
