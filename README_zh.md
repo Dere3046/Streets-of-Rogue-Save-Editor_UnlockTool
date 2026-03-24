@@ -4,30 +4,123 @@
 
 [English Version](./README.md)
 
-## 用处
+## 功能
 - 将二进制存档文件导出为可读写的 JSON 格式
 - 将修改后的 JSON 重新打包为游戏可识别的二进制存档
-- 支持修改游戏内解锁项（unlocks）等数据
+- 从零创建新的存档文件
+- 一键解锁所有物品/角色/特性
+- 修改游戏统计数据（nuggets、胜利次数、死亡次数等）
 
-## 用法
+## 要求
+- .NET 8.0 运行环境
+- 游戏 DLL 文件（`Assembly-CSharp.dll`、`Assembly-CSharp-firstpass.dll`）必须位于 `win_x64/lib` 文件夹中
 
-### 基本命令
-```powershell
-# 导出存档为 JSON
-UnlockToolConsole.exe GameUnlocks.dat > data.json
-
-# 将修改后的 JSON 写回新存档
-Get-Content data.json -Raw | UnlockToolConsole.exe GameUnlocks.dat GameUnlocks_new.dat
+## 编译
+```bash
+cd win_x64
+dotnet build -c Release
 ```
 
-### 调试模式
-工具会自动输出诊断信息到标准错误流，可通过重定向查看：
-```powershell
-# 导出时查看诊断
-UnlockToolConsole.exe GameUnlocks.dat > data.json 2> diag.log
+## 使用方法
 
-# 写回时查看诊断
-Get-Content data.json -Raw | UnlockToolConsole.exe GameUnlocks.dat GameUnlocks_new.dat 2> write.log
+### 命令列表
+
+```bash
+# 显示帮助
+UnlockToolConsole.exe
+
+# 加载存档并导出为 JSON
+UnlockToolConsole.exe load GameUnlocks.dat > output.json
+
+# 从 JSON 导入创建新存档
+UnlockToolConsole.exe import input.json GameUnlocks_new.dat
+
+# 导出存档到 JSON 文件
+UnlockToolConsole.exe json GameUnlocks.dat output.json
+
+# 创建新的空存档
+UnlockToolConsole.exe create new.dat
+
+# 解锁指定内容
+UnlockToolConsole.exe unlock GameUnlocks.dat RobotPlayer Agent
+
+# 解锁所有内容
+UnlockToolConsole.exe unlockall GameUnlocks.dat
+
+# 锁定指定内容
+UnlockToolConsole.exe lock GameUnlocks.dat RobotPlayer Agent
+
+# 修改统计数据
+UnlockToolConsole.exe stats GameUnlocks.dat nuggets 99999
+UnlockToolConsole.exe stats GameUnlocks.dat wins 100
+
+# 列出解锁项（可按类型筛选）
+UnlockToolConsole.exe list GameUnlocks.dat
+UnlockToolConsole.exe list GameUnlocks.dat Agent
+```
+
+### 命令别名
+| 完整命令 | 别名 |
+|---------|------|
+| `load` | `l`, `read` |
+| `save` | `s`, `write` |
+| `unlock` | `u` |
+| `unlockall` | `ua`, `all` |
+| `lock` | `lk` |
+| `json` | `j`, `export` |
+| `import` | `i` |
+| `create` | `c`, `new` |
+| `list` | - |
+| `stats` | - |
+
+### 解锁类型
+- `Agent` - 角色（Cop, Guard, Thief, RobotPlayer 等）
+- `Trait` - 特性（Strong, Fast, Tough 等）
+- `Item` - 物品（Pistol, Shotgun, Medkit 等）
+- `Floor` - 楼层（Floor2, Floor3, Floor4, Floor5）
+- `Challenge` - 挑战（Sandbox, InfiniteAmmo 等）
+- `Extra` - 额外内容/成就
+- `BigQuest` - 大型任务
+- `Ability` - 能力
+- `Loadout` - 装备配置
+
+### 使用示例
+
+```bash
+# 导出存档到 JSON，编辑后导入
+UnlockToolConsole.exe json GameUnlocks.dat save.json
+# ... 编辑 save.json ...
+UnlockToolConsole.exe import save.json GameUnlocks_modified.dat
+
+# 创建全解锁存档
+UnlockToolConsole.exe create full.dat
+UnlockToolConsole.exe unlockall full.dat
+
+# 修改现有存档的nuggets数量为 99999
+UnlockToolConsole.exe stats GameUnlocks.dat nuggets 99999
+
+# 解锁特定角色
+UnlockToolConsole.exe unlock GameUnlocks.dat Vampire Agent
+
+# 查看所有已解锁的角色
+UnlockToolConsole.exe list GameUnlocks.dat Agent
+```
+
+## 项目结构
+```
+Rogue_Save_Editor_UnlockTool/
+├── win_x64/                        # 源代码目录
+│   ├── Program.cs                  # 主程序入口
+│   ├── GameUnlocksUtility.cs       # 存档工具类（加载/保存/转换）
+│   ├── SaveDataDto.cs              # JSON 序列化 DTO 类
+│   ├── UnlockToolConsole.csproj    # 项目文件
+│   ├── lib/                        # 游戏 DLL（编译必需）
+│   │   ├── Assembly-CSharp.dll
+│   │   └── Assembly-CSharp-firstpass.dll
+│   └── data/                       # 示例存档
+│       └── GameUnlocks.dat
+├── README.md                       # 英文文档
+└── README_zh.md                    # 本文档
 ```
 
 ## 免责申明

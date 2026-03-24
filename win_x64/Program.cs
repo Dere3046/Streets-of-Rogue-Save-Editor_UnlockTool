@@ -1,354 +1,372 @@
-#nullable disable
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Reflection;
+using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
-public enum weaponType
+namespace RogueSaveEditor
 {
-    None,
-    WeaponProjectile,
-    WeaponThrown,
-    WeaponMelee
-}
-
-[Serializable]
-public class InvItemLight
-{
-    public int invItemID;
-    public int itemNetID;
-    public string invItemName;
-    public string invItemRealName;
-    public string invItemDescription;
-    public string spriteName;
-    public int invItemCount;
-    public bool equipped;
-    public float hierarchy;
-    public float hierarchy2;
-    public int itemValue;
-    public int slotNum;
-    public int autoSortToolbarSlot;
-    public int initCount;
-    public int initCountAI;
-    public int rewardCount;
-    public int maxAmmo;
-    public int lowCountThreshold;
-    public bool stackable;
-    public bool stackableContents;
-    public bool canRepeatInShop;
-    public bool nonStackableInShop;
-    public bool specialDamage;
-    public bool incendiaryDamage;
-    public int throwDistance;
-    public int throwDamage;
-    public bool throwExtraDist;
-    public int touchDamage;
-    public int otherDamage;
-    public int meleeDamage;
-    public bool meleeNoHit;
-    public bool nonLethal;
-    public bool hasCharges;
-    public bool startingItem;
-    public bool canBeUsedOnDoor;
-    public bool canBeUsedOnWindow;
-    public bool canBeUsedOnSafe;
-    public bool canBeUsedOnComputer;
-    public bool isKey;
-    public bool isSafeCombination;
-    public bool notInLoadoutMachine;
-    public bool noCountText;
-    public bool doesNoDamage;
-    public bool rapidFire;
-    public bool shortRangeProjectile;
-    public bool longerRapidFire;
-    public bool noRefills;
-    public bool cantStoreInATMMachine;
-    public string itemType;
-    public weaponType weaponCode;
-    public int specificChunk;
-    public int specificSector;
-    public int healthChange;
-    public string statusEffect;
-    public bool goesInToolbar;
-    public bool cantBeCloned;
-    public bool dontAutomaticallySelect;
-    public bool thiefCantSteal;
-    public bool dontSelectNPC;
-    public bool isWeapon;
-    public bool isArmor;
-    public bool isArmorHead;
-    public bool questItem;
-    public bool questItemCanBuy;
-    public bool permanentHeadPiece;
-    public bool behindHair;
-    public bool cantShowHair;
-    public bool cantShowHairAtAll;
-    public bool destroyAtLevelEnd;
-    public bool specialMeleeTexture;
-    public bool doSpill;
-    public bool canHaveStartingOwner;
-    public bool stealable;
-    public bool used;
-    public bool addedToMoneyCount;
-    public bool noSoundOnAgentHit;
-    public bool weaponToBeLoaded;
-    public bool reactOnTouch;
-    public bool noShadow;
-    public bool canCatchFire;
-    public bool rechargingItem;
-    public int rechargeAmount;
-    public int rechargeAmountInverse;
-    public int treasureVal;
-    public bool canHaveExtraAmmo;
-    public bool identifiedContents;
-    public bool cantDrop;
-    public bool cantDropNPC;
-    public string cantDropSpecificCharacter;
-    public bool characterExclusive;
-    public string characterExclusiveSpecificCharacter;
-    public string hitSoundType;
-    public string armorDepletionType;
-    public int startingChunk;
-    public int ownerID;
-    public bool canFix;
-    public int tiedToItemCode;
-    public List<string> Categories = new List<string>();
-    public List<string> contents = new List<string>();
-    public List<int> chunks = new List<int>();
-    public List<int> sectors = new List<int>();
-    public int speedMod;
-    public int strengthMod;
-    public int accuracyMod;
-    public int enduranceMod;
-    public int shadowOffset;
-    public int chanceToWear;
-    public int gunKnockback;
-    public bool justAddedForNewCharacterEveryLevel;
-    public bool dontFlash;
-    public string colliderSize;
-}
-
-[Serializable]
-public class SaveCharacterData
-{
-    public string characterName;
-    public string characterDescription;
-    public string bodyType;
-    public string bodyColorName;
-    public string hairType;
-    public string hairColorName;
-    public string facialHair = "None";
-    public string skinColorName;
-    public string legsColorName;
-    public string eyesType;
-    public string eyesColorName;
-    public int endurance;
-    public int strength;
-    public int accuracy;
-    public int speed;
-    public string specialAbility;
-    public string bigQuest;
-    public List<string> traits = new List<string>();
-    public List<string> items = new List<string>();
-    public string startingHeadPiece;
-    public bool exceededPoints;
-    public ulong publishedFileID;
-}
-
-[Serializable]
-public class Unlock
-{
-    public static int extraCount;
-    public static int homeBaseCount;
-    public static int agentCount;
-    public static int bigQuestCount;
-    public static int challengeCount;
-    public static int floorCount;
-    public static int traitCount;
-    public static int traitCountCharacterCreation;
-    public static int abilityCount;
-    public static int itemCount;
-    public static int itemCountCharacterCreation;
-    public static int itemCountFree;
-    public static int loadoutCount;
-    public static int achievementCount;
-
-    public string unlockName;
-    public string unlockNameType;
-    public string unlockDescriptionType;
-    public string unlockType;
-    public bool unlocked;
-    public bool nowAvailable;
-    public bool onlyInCharacterCreation;
-    public bool removeInMech;
-    public bool freeItem;
-    public bool notActive;
-    public bool unavailable;
-    public bool removal;
-    public string replacing;
-    public bool isUpgrade;
-    public bool cantSwap;
-    public bool cantLose;
-    public bool dcUnlock;
-    public int progressCount;
-    public List<string> progressList = new List<string>();
-    public List<string> agents = new List<string>();
-    public List<string> categories = new List<string>();
-    public List<string> specialAbilities = new List<string>();
-    public List<string> leadingTraits = new List<string>();
-    public List<string> leadingItems = new List<string>();
-    public List<string> leadingBigQuests = new List<string>();
-    public List<string> prerequisites = new List<string>();
-    public List<string> cancellations = new List<string>();
-    public List<string> recommendations = new List<string>();
-    public string upgrade;
-    public int cost;
-    public int cost2;
-    public int cost3;
-    public bool notOnClient;
-}
-
-[Serializable]
-public class UnlockSaveData
-{
-    public List<Unlock> unlocks = new List<Unlock>();
-    public List<HighScore> highScores = new List<HighScore>();
-    public List<string> customCharacterSlots = new List<string>();
-    public InvItemLight storedItem;
-    public InvItemLight storedItem2;
-    public InvItemLight storedItem3;
-    public InvItemLight storedItem4;
-    public InvItemLight storedItem5;
-    public int totalDeaths;
-    public int totalWins;
-    public int totalGamesPlayed;
-    public int nuggets;
-    public string lastDailyRun;
-    public bool finishedTutorial;
-    public bool viewedReadThis;
-    public string currentVersion;
-    public List<Unlock>[] loadoutList;
-    public List<string>[] rewardConfigConsoleList;
-    public List<string>[] traitConfigConsoleList;
-    public List<string>[] mutatorConfigConsoleList;
-}
-
-[Serializable]
-public class HighScore
-{
-    public int skillPoints;
-    public int skillLevel;
-    public string agentName;
-    public int finalFloor;
-    public string finalFloorText;
-    public float timeTaken;
-    public string timeTakenText;
-    public string deathMethod;
-    public string deathKiller;
-}
-
-internal sealed class CustomBinder : SerializationBinder
-{
-    public override Type BindToType(string assemblyName, string typeName)
+    class Program
     {
-        Assembly ResolveAssembly(AssemblyName name)
+        static void Main(string[] args)
         {
-            if (name.Name != null && name.Name.StartsWith("Assembly-CSharp"))
-                return Assembly.GetExecutingAssembly();
-            return Assembly.Load(name);
-        }
+            if (args.Length < 1)
+            {
+                PrintUsage();
+                return;
+            }
 
-        Type type = Type.GetType(typeName, ResolveAssembly, null, false, true);
-        return type;
-    }
-}
+            string command = args[0].ToLowerInvariant();
 
-internal class Program
-{
-    static void Main(string[] args)
-    {
-        if (args.Length < 1)
-        {
-            Console.WriteLine("Usage:");
-            Console.WriteLine("  UnlockToolConsole.exe <input.dat>                   -> output JSON to stdout");
-            Console.WriteLine("  UnlockToolConsole.exe <input.dat> <output.dat>      -> read JSON from stdin, write binary");
-            return;
-        }
-
-        string inputFile = args[0];
-        if (!File.Exists(inputFile))
-        {
-            Console.Error.WriteLine($"Error: File '{inputFile}' not found.");
-            Environment.Exit(1);
-        }
-
-        var jsonOptions = new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            IncludeFields = true,
-            ReferenceHandler = ReferenceHandler.Preserve
-        };
-
-        if (args.Length == 1)
-        {
             try
             {
-                var formatter = new BinaryFormatter { Binder = new CustomBinder() };
-                using var fs = new FileStream(inputFile, FileMode.Open, FileAccess.Read);
-                var data = (UnlockSaveData)formatter.Deserialize(fs);
+                switch (command)
+                {
+                    case "load":
+                    case "l":
+                    case "read":
+                        if (args.Length < 2)
+                        {
+                            Console.Error.WriteLine("Error: Please specify save file path");
+                            PrintUsage();
+                            return;
+                        }
+                        LoadAndPrint(args[1]);
+                        break;
 
-                Console.Error.WriteLine($"[Diagnostic] Unlock count: {data.unlocks?.Count ?? 0}");
-                if (data.unlocks != null && data.unlocks.Count > 0)
-                    Console.Error.WriteLine($"[Diagnostic] First unlock name: {data.unlocks[0].unlockName}");
-                Console.Error.WriteLine($"[Diagnostic] Nuggets: {data.nuggets}");
-                Console.Error.WriteLine($"[Diagnostic] HighScore count: {data.highScores?.Count ?? 0}");
-                Console.Error.WriteLine($"[Diagnostic] StoredItem null? {data.storedItem == null}");
+                    case "save":
+                    case "s":
+                    case "write":
+                        if (args.Length < 2)
+                        {
+                            Console.Error.WriteLine("Error: Please specify output file path");
+                            PrintUsage();
+                            return;
+                        }
+                        SaveFromJson(args[1], args.Length > 2 ? args[2] : null);
+                        break;
 
-                var json = JsonSerializer.Serialize(data, jsonOptions);
-                Console.Out.Write(json);
+                    case "unlock":
+                    case "u":
+                        if (args.Length < 4)
+                        {
+                            Console.Error.WriteLine("Error: Please specify save file, unlock name, and type");
+                            Console.Error.WriteLine("Usage: unlock <file> <name> <type>");
+                            return;
+                        }
+                        UnlockSpecific(args[1], args[2], args[3]);
+                        break;
+
+                    case "unlockall":
+                    case "ua":
+                    case "all":
+                        if (args.Length < 2)
+                        {
+                            Console.Error.WriteLine("Error: Please specify save file path");
+                            return;
+                        }
+                        UnlockAll(args[1]);
+                        break;
+
+                    case "lock":
+                    case "lk":
+                        if (args.Length < 4)
+                        {
+                            Console.Error.WriteLine("Error: Please specify save file, unlock name, and type");
+                            return;
+                        }
+                        LockSpecific(args[1], args[2], args[3]);
+                        break;
+
+                    case "json":
+                    case "j":
+                    case "export":
+                        if (args.Length < 3)
+                        {
+                            Console.Error.WriteLine("Error: Please specify input file and output JSON path");
+                            return;
+                        }
+                        ExportToJson(args[1], args[2]);
+                        break;
+
+                    case "import":
+                    case "i":
+                        if (args.Length < 3)
+                        {
+                            Console.Error.WriteLine("Error: Please specify JSON file and output path");
+                            return;
+                        }
+                        ImportFromJson(args[1], args[2]);
+                        break;
+
+                    case "create":
+                    case "new":
+                    case "c":
+                        if (args.Length < 2)
+                        {
+                            Console.Error.WriteLine("Error: Please specify output file path");
+                            return;
+                        }
+                        CreateNewSave(args[1]);
+                        break;
+
+                    case "stats":
+                        if (args.Length < 2)
+                        {
+                            Console.Error.WriteLine("Error: Please specify save file path");
+                            return;
+                        }
+                        ModifyStats(args);
+                        break;
+
+                    case "list":
+                        if (args.Length < 2)
+                        {
+                            Console.Error.WriteLine("Error: Please specify save file path");
+                            return;
+                        }
+                        ListUnlocks(args[1], args.Length > 2 ? args[2] : null);
+                        break;
+
+                    default:
+                        if (File.Exists(command))
+                        {
+                            LoadAndPrint(command);
+                        }
+                        else if (args.Length == 2 && File.Exists(command))
+                        {
+                            SaveFromJson(command, args[1]);
+                        }
+                        else
+                        {
+                            Console.Error.WriteLine($"Unknown command: {command}");
+                            PrintUsage();
+                        }
+                        break;
+                }
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine("Deserialization failed:");
-                Console.Error.WriteLine(ex.ToString());
+                Console.Error.WriteLine($"Error: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.Error.WriteLine($"Details: {ex.InnerException.Message}");
+                }
                 Environment.Exit(1);
             }
         }
-        else if (args.Length == 2)
+
+        static void PrintUsage()
         {
-            string outputFile = args[1];
-            string jsonStr = Console.In.ReadToEnd();
+            Console.WriteLine("===========================================");
+            Console.WriteLine("  Streets of Rogue Save Editor Tool");
+            Console.WriteLine("  GameUnlocks.dat Parser and Generator");
+            Console.WriteLine("===========================================");
+            Console.WriteLine();
+            Console.WriteLine("Usage: UnlockToolConsole <command> [args]");
+            Console.WriteLine();
+            Console.WriteLine("Commands:");
+            Console.WriteLine("  load, l <file>                       - Load and display save (outputs JSON)");
+            Console.WriteLine("  save, s <output> [json]              - Create save from JSON (stdin or file)");
+            Console.WriteLine("  unlock, u <file> <name> <type>       - Unlock specific item");
+            Console.WriteLine("  unlockall, ua <file>                 - Unlock everything");
+            Console.WriteLine("  lock, lk <file> <name> <type>        - Lock specific item");
+            Console.WriteLine("  json, j <file> <output>              - Export to JSON file");
+            Console.WriteLine("  import, i <json> <output>            - Import from JSON to save");
+            Console.WriteLine("  create, c <output>                   - Create new empty save");
+            Console.WriteLine("  stats <file> <stat> <value>          - Modify statistics");
+            Console.WriteLine("  list <file> [type]                   - List unlocks");
+            Console.WriteLine();
+            Console.WriteLine("Unlock Types:");
+            Console.WriteLine("  Agent       - Characters (Cop, Guard, Thief, RobotPlayer, etc.)");
+            Console.WriteLine("  Trait       - Traits");
+            Console.WriteLine("  Item        - Items");
+            Console.WriteLine("  Floor       - Floors (Floor2, Floor3, Floor4, Floor5)");
+            Console.WriteLine("  Challenge   - Challenges");
+            Console.WriteLine("  Extra       - Extra unlocks (achievements)");
+            Console.WriteLine("  BigQuest    - Big Quests");
+            Console.WriteLine("  Ability     - Abilities");
+            Console.WriteLine("  Loadout     - Loadouts");
+            Console.WriteLine();
+            Console.WriteLine("Examples:");
+            Console.WriteLine("  UnlockToolConsole l \"C:\\GameUnlocks.dat\" > output.json");
+            Console.WriteLine("  UnlockToolConsole u \"C:\\GameUnlocks.dat\" RobotPlayer Agent");
+            Console.WriteLine("  UnlockToolConsole ua \"C:\\GameUnlocks.dat\"");
+            Console.WriteLine("  UnlockToolConsole j \"C:\\GameUnlocks.dat\" \"C:\\output.json\"");
+            Console.WriteLine("  UnlockToolConsole i \"C:\\input.json\" \"C:\\GameUnlocks.dat\"");
+            Console.WriteLine("  UnlockToolConsole stats \"C:\\GameUnlocks.dat\" nuggets 99999");
+            Console.WriteLine("  UnlockToolConsole c \"C:\\new.dat\"");
+        }
 
-            Console.Error.WriteLine($"[Write] Received JSON length: {jsonStr.Length} bytes");
+        static void LoadAndPrint(string filePath)
+        {
+            Console.Error.WriteLine($"Loading save: {filePath}");
+            var data = GameUnlocksUtility.Load(filePath);
 
-            try
+            Console.Error.WriteLine($"[Info] Unlock count: {data.unlocks?.Count ?? 0}");
+            Console.Error.WriteLine($"[Info] Nuggets: {data.nuggets}");
+            Console.Error.WriteLine($"[Info] HighScore count: {data.highScores?.Count ?? 0}");
+            Console.Error.WriteLine($"[Info] Game version: {data.currentVersion ?? "Unknown"}");
+
+            var dto = GameUnlocksUtility.ToDto(data);
+            var jsonSettings = new JsonSerializerSettings
             {
-                var data = JsonSerializer.Deserialize<UnlockSaveData>(jsonStr, jsonOptions);
-                if (data == null)
+                Formatting = Formatting.Indented
+            };
+            var json = JsonConvert.SerializeObject(dto, jsonSettings);
+            Console.Out.Write(json);
+        }
+
+        static void SaveFromJson(string outputFile, string inputFile)
+        {
+            string jsonStr;
+            if (!string.IsNullOrEmpty(inputFile))
+            {
+                jsonStr = File.ReadAllText(inputFile);
+                Console.Error.WriteLine($"[Info] Reading JSON from file: {inputFile}");
+            }
+            else
+            {
+                jsonStr = Console.In.ReadToEnd();
+                Console.Error.WriteLine($"[Info] Reading JSON from stdin");
+            }
+
+            var jsonSettings = new JsonSerializerSettings();
+            var dto = JsonConvert.DeserializeObject<UnlockSaveDataDto>(jsonStr, jsonSettings);
+            if (dto == null)
+            {
+                Console.Error.WriteLine("[Error] JSON deserialization returned null");
+                Environment.Exit(1);
+            }
+
+            var data = GameUnlocksUtility.FromDto(dto);
+            Console.Error.WriteLine($"[Info] Unlock count: {data.unlocks?.Count ?? 0}");
+            Console.Error.WriteLine($"[Info] Nuggets: {data.nuggets}");
+
+            GameUnlocksUtility.Save(outputFile, data);
+        }
+
+        static void UnlockSpecific(string filePath, string unlockName, string unlockType)
+        {
+            var data = GameUnlocksUtility.Load(filePath);
+            GameUnlocksUtility.UnlockItem(data, unlockName, unlockType);
+            Console.Error.WriteLine($"Unlocked: {unlockName} ({unlockType})");
+            GameUnlocksUtility.Save(filePath, data);
+        }
+
+        static void UnlockAll(string filePath)
+        {
+            var data = GameUnlocksUtility.Load(filePath);
+            GameUnlocksUtility.UnlockEverything(data);
+            Console.Error.WriteLine("All unlocks completed!");
+            GameUnlocksUtility.Save(filePath, data);
+        }
+
+        static void LockSpecific(string filePath, string unlockName, string unlockType)
+        {
+            var data = GameUnlocksUtility.Load(filePath);
+            GameUnlocksUtility.LockItem(data, unlockName, unlockType);
+            Console.Error.WriteLine($"Locked: {unlockName} ({unlockType})");
+            GameUnlocksUtility.Save(filePath, data);
+        }
+
+        static void ExportToJson(string filePath, string outputPath)
+        {
+            var data = GameUnlocksUtility.Load(filePath);
+            var dto = GameUnlocksUtility.ToDto(data);
+
+            var jsonSettings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented
+            };
+            var json = JsonConvert.SerializeObject(dto, jsonSettings);
+            File.WriteAllText(outputPath, json, System.Text.Encoding.UTF8);
+            Console.Error.WriteLine($"Exported to JSON: {outputPath}");
+        }
+
+        static void ImportFromJson(string jsonPath, string outputPath)
+        {
+            var json = File.ReadAllText(jsonPath, System.Text.Encoding.UTF8);
+
+            Console.Error.WriteLine($"[Info] Reading JSON file: {jsonPath} ({json.Length} bytes)");
+
+            var jsonSettings = new JsonSerializerSettings();
+            var dto = JsonConvert.DeserializeObject<UnlockSaveDataDto>(json, jsonSettings);
+            if (dto == null)
+            {
+                Console.Error.WriteLine("[Error] JSON deserialization returned null");
+                Environment.Exit(1);
+            }
+
+            var data = GameUnlocksUtility.FromDto(dto);
+            Console.Error.WriteLine($"[Info] Importing {data.unlocks?.Count ?? 0} unlocks");
+            Console.Error.WriteLine($"[Info] Nuggets: {data.nuggets}");
+
+            GameUnlocksUtility.Save(outputPath, data, false);
+        }
+
+        static void CreateNewSave(string filePath)
+        {
+            var data = GameUnlocksUtility.CreateNewSaveData();
+            GameUnlocksUtility.Save(filePath, data, false);
+            Console.Error.WriteLine("New save file created successfully!");
+        }
+
+        static void ModifyStats(string[] args)
+        {
+            var filePath = args[1];
+            var data = GameUnlocksUtility.Load(filePath);
+
+            if (args.Length >= 4)
+            {
+                var statName = args[2].ToLowerInvariant();
+                var statValue = args[3];
+
+                switch (statName)
                 {
-                    Console.Error.WriteLine("[Write] Deserialized data is null.");
-                    Environment.Exit(1);
+                    case "deaths":
+                    case "totaldeaths":
+                        data.totalDeaths = int.Parse(statValue);
+                        Console.Error.WriteLine($"Set totalDeaths: {statValue}");
+                        break;
+                    case "wins":
+                    case "totalwins":
+                        data.totalWins = int.Parse(statValue);
+                        Console.Error.WriteLine($"Set totalWins: {statValue}");
+                        break;
+                    case "gamesplayed":
+                    case "totalgamesplayed":
+                        data.totalGamesPlayed = int.Parse(statValue);
+                        Console.Error.WriteLine($"Set totalGamesPlayed: {statValue}");
+                        break;
+                    case "nuggets":
+                        data.nuggets = int.Parse(statValue);
+                        Console.Error.WriteLine($"Set nuggets: {statValue}");
+                        break;
+                    case "finishedtutorial":
+                        data.finishedTutorial = bool.Parse(statValue);
+                        Console.Error.WriteLine($"Set finishedTutorial: {statValue}");
+                        break;
+                    default:
+                        Console.Error.WriteLine($"Unknown stat: {statName}");
+                        Console.Error.WriteLine("Available stats: deaths, wins, gamesPlayed, nuggets, finishedTutorial");
+                        return;
                 }
 
-                Console.Error.WriteLine($"[Write] Unlock count: {data.unlocks?.Count ?? 0}");
-                if (data.unlocks != null && data.unlocks.Count > 0)
-                    Console.Error.WriteLine($"[Write] First unlock name: {data.unlocks[0].unlockName}");
-                Console.Error.WriteLine($"[Write] Nuggets: {data.nuggets}");
-
-                var formatter = new BinaryFormatter { Binder = new CustomBinder() };
-                using var fs = new FileStream(outputFile, FileMode.Create, FileAccess.Write);
-                formatter.Serialize(fs, data);
+                GameUnlocksUtility.Save(filePath, data);
             }
-            catch (Exception ex)
+            else
             {
-                Console.Error.WriteLine("Serialization failed:");
-                Console.Error.WriteLine(ex.ToString());
-                Environment.Exit(1);
+                Console.Error.WriteLine("Usage: stats <file> <stat> <value>");
+                Console.Error.WriteLine("Available stats: deaths, wins, gamesPlayed, nuggets, finishedTutorial");
             }
+        }
+
+        static void ListUnlocks(string filePath, string filterType)
+        {
+            var data = GameUnlocksUtility.Load(filePath);
+            GameUnlocksUtility.ListUnlocks(data, filterType);
         }
     }
 }
